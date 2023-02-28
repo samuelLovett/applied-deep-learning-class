@@ -20,7 +20,7 @@ TODO:
 """
 from pre_processing import pre_processing
 import pandas as pd
-import numpy
+import numpy as np
 
 
 def read_test_data():
@@ -35,16 +35,22 @@ def read_train_data():
     # Load train data from CSV file
     col_names = ['Loan_ID', 'Gender', 'Married', 'Dependents', 'Education', 'Self_Employed', 'ApplicantIncome',
                  'CoapplicantIncome', 'LoanAmount', 'Loan_Amount_Term', 'Credit_History', 'Property_Area', 'label']
-    train_data = pd.read_csv('train.csv', skiprows=1, header=0, names=col_names)
-    print(train_data.head())
+    train_data = pd.read_csv('train.csv', skiprows=1, header=0, names=col_names, usecols=lambda column: column not in ['Loan_ID'])
     return train_data
 
 
 def main():
     # import data
     test_data = read_test_data()
-    train_features = read_train_data()[0]
-    train_labels = read_train_data()[1]
+    train_data = read_train_data()
+
+    my_preprocessing = pre_processing(train_data)
+    training_features = my_preprocessing.get_training_features()
+    validation_features = my_preprocessing.get_validation_features()
+    #print(validation_features)
+    #print(training_features)
+    pca_data = my_preprocessing.PCA(5, training_features)
+    print(pca_data)
 
 
 

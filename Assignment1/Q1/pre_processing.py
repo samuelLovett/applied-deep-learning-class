@@ -28,22 +28,55 @@ TODO:
 """
 import pandas as pd
 from sklearn.model_selection import train_test_split
+from sklearn.preprocessing import OneHotEncoder
+from sklearn.compose import ColumnTransformer
+from sklearn.decomposition import PCA
+
 
 
 class pre_processing:
-    def __init__(self, unfiltered_data):
+    def __init__(self, unfiltered_data, training_data=True):
         # remove all rows with empty data
-        filtered_data = unfiltered_data.dropna()
-        # Split the data into X (feature vectors) and y (labels)
-        whole_training_features = filtered_data.iloc[:, :-1].values
-        whole_training_labels = filtered_data.iloc[:, -1].values
-        self.train_features, self.validation_features, self.train_labels, self.validation_labels = \
-            train_test_split(whole_training_features, whole_training_labels, test_size=0.2, random_state=42)
-        return filtered_data
+        self.filtered_data = unfiltered_data.dropna()
+        if training_data:
+            # Split the data into X (feature vectors) and y (labels)
+            whole_training_features = self.filtered_data.iloc[:, :-1].values
+            whole_training_labels = self.filtered_data.iloc[:, -1].values
 
-    def create_training_and_validation_set(self, filtered_data):
+            # Create a ColumnTransformer to apply OneHotEncoder to categorical columns only
+            transformer = ColumnTransformer(
+                transformers=[
+                    ('onehot', OneHotEncoder(), [0, 1, 2, 3, 4, 10])  # encode column 0 only
+                ], remainder='passthrough'  # pass through the numerical column(s) as is
+            )
+            whole_training_features_encoded = transformer.fit_transform(whole_training_features)
+            encoded_features = pd.DataFrame(whole_training_features_encoded)
+            encoded_features.columns = ['Female', 'Male', 'Not Married', 'Married', 'Zero kids', 'One Kid', 'Two Kids',
+                                        'Three or more kids', 'Graduate', 'Not Graduate', 'Not Self Emp.', 'Self Emp.',
+                                        'Rural', 'Semiurban', 'Urban', 'ApplicantIncome', 'CoapplicantIncome',
+                                        'LoanAmount', 'Loan_Amount_Term', 'Credit_History']
 
-        y.head();
-        self.training_data = "a subset of the whole_train_data with validation data removed"
-        self.validation_data = "a subset of the whole_train_data with training data removed"
+            self.train_features, self.validation_features, self.train_labels, self.validation_labels = \
+                train_test_split(encoded_features, whole_training_labels, test_size=0.2, random_state=42)
 
+    def get_data_clean(self):
+        return self.filtered_data
+
+    def get_training_features(self):
+        return self.train_features
+
+    def get_validation_features(self):
+        return self.validation_features
+
+    def get_training_labels(self):
+        return self.train_labels
+
+    def get_validation_labels(self):
+        return self.validation_labels
+
+    def PCA(self, components, data):
+        pca = PCA(n_components=components)
+        pca.fit(data)
+        principle_comp = pca.transform(data)
+
+        return principle_comp
