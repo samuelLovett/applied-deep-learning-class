@@ -27,22 +27,23 @@ TODO:
 
 """
 import pandas as pd
+from sklearn.model_selection import train_test_split
 
 
 class pre_processing:
-    def __init__(self):
-        print("hello")
-        self.test_data = pd.read_csv('test.csv')
-        self.whole_train_data = pd.read_csv('train.csv')
-        # might not want to do these in the init because we likely want to do all of our cleaning before separating
-        # Investigation required
-        self.training_data = None
-        self.validation_data = None
+    def __init__(self, unfiltered_data):
+        # remove all rows with empty data
+        filtered_data = unfiltered_data.dropna()
+        # Split the data into X (feature vectors) and y (labels)
+        whole_training_features = filtered_data.iloc[:, :-1].values
+        whole_training_labels = filtered_data.iloc[:, -1].values
+        self.train_features, self.validation_features, self.train_labels, self.validation_labels = \
+            train_test_split(whole_training_features, whole_training_labels, test_size=0.2, random_state=42)
+        return filtered_data
 
-    def create_training_and_validation_set(self, stratified):
-        if stratified:
-            print("do a thing")
-        else:
-            print("do the other thing")
+    def create_training_and_validation_set(self, filtered_data):
+
+        y.head();
         self.training_data = "a subset of the whole_train_data with validation data removed"
         self.validation_data = "a subset of the whole_train_data with training data removed"
+
