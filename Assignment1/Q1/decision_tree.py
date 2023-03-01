@@ -18,8 +18,8 @@ class decisionTreeClass:
         optimizer = GridSearchCV(self.tree_classifier, param_grid=parameters_to_optimize, cv=5)
         optimizer.fit(dt_validation_features, dt_validation_label)
         self.tree_classifier = optimizer.best_estimator_
-        print("Best parameters:", optimizer.best_params_)
-        print("Best score:", optimizer.best_score_)
+        # print("Best parameters:", optimizer.best_params_)
+        # print("Best score:", optimizer.best_score_)
 
     def predict(self, dt_test_features):
         return self.tree_classifier.predict(dt_test_features)

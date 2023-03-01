@@ -34,7 +34,7 @@ class knnClass:
         training_labels = y
         self.training_start_time = time.time()
 
-        number_of_neighbours = {'neighbours': np.arange(1, 11)}
+        number_of_neighbours = {'n_neighbors': np.arange(1, 11)}
         self.knn = KNeighborsClassifier()
         optimize = GridSearchCV(self.knn, param_grid=number_of_neighbours, cv=5)
         optimize.fit(training_features, training_labels)
@@ -47,7 +47,7 @@ class knnClass:
     def predict(self, knn_test_features):
         # Make predictions on test set
         self.prediction_time_start = time.time()
-        prediction = self.clf.predict(knn_test_features)
+        prediction = self.knn.predict(knn_test_features)
         self.prediction_time_end = time.time()
         return prediction
 

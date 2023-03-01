@@ -8,23 +8,6 @@ calling the pre_processing script which conducts all the (feature analysis, feat
 and feature selection). pre_processing() returns the reduced and cleaned feature space which is then used as the input
 for the classification methods. For simplicity the model evaluation is conducted directly within this script.
 
-TODO:
-    - separation of training and validation data sets
-        - to stratify or not to stratify
-    - feature analysis function
-        - clarify what is meant
-    - feature visualization function
-        - visually examine for outliers
-        - clarify what is meant
-    - feature cleaning function
-        - to standardize or not
-        - to normalize or not
-        - look for outliers
-        - look for lines with missing data
-            - potentially try to impute the missing data
-    - feature selection function
-    - return selected features along with labels for test, train, and validation
-
 """
 import pandas as pd
 import numpy as np
@@ -98,6 +81,7 @@ class pre_ProcessingClass:
                                                'Rural', 'Semiurban', 'Urban', 'ApplicantIncome',
                                                'CoapplicantIncome',
                                                'LoanAmount', 'Loan_Amount_Term', 'Credit_History']
+            self.encoded_test_data = encoded_test_data_frame
 
     def get_data_clean(self):
         return self.filtered_data
@@ -124,7 +108,10 @@ class pre_ProcessingClass:
         return self.metric_features
 
     def get_metric_labels(self):
-        return self.metric_labels
+        return self.metrics_labels
+
+    def get_test_data(self):
+        return self.encoded_test_data
 
     def do_pca(self, components, data):
         standardized_data = pre_pro.scale(data)
