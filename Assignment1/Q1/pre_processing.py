@@ -73,15 +73,14 @@ class pre_ProcessingClass:
                 ], remainder='passthrough'  # pass through the numerical columns and data labels as is
             )
             test_features_encoded = transformer.fit_transform(self.filtered_data)
-            encoded_test_data_frame = pd.DataFrame(test_features_encoded)
-            encoded_test_data_frame.columns = ['Female', 'Male', 'Not Married', 'Married', 'Zero kids', 'One Kid',
-                                               'Two Kids',
-                                               'Three or more kids', 'Graduate', 'Not Graduate', 'Not Self Emp.',
-                                               'Self Emp.',
-                                               'Rural', 'Semiurban', 'Urban', 'ApplicantIncome',
-                                               'CoapplicantIncome',
-                                               'LoanAmount', 'Loan_Amount_Term', 'Credit_History']
-            self.encoded_test_data = encoded_test_data_frame
+            self.encoded_test_data_frame = pd.DataFrame(test_features_encoded)
+            # self.encoded_test_data_frame.columns = ['Female', 'Male', 'Not Married', 'Married', 'Zero kids', 'One Kid',
+            #                                    'Two Kids',
+            #                                    'Three or more kids', 'Graduate', 'Not Graduate', 'Not Self Emp.',
+            #                                    'Self Emp.',
+            #                                    'Rural', 'Semiurban', 'Urban', 'ApplicantIncome',
+            #                                    'CoapplicantIncome',
+            #                                    'LoanAmount', 'Loan_Amount_Term', 'Credit_History']
 
     def get_data_clean(self):
         return self.filtered_data
@@ -111,7 +110,7 @@ class pre_ProcessingClass:
         return self.metrics_labels
 
     def get_test_data(self):
-        return self.encoded_test_data
+        return self.encoded_test_data_frame
 
     def do_pca(self, components, data):
         standardized_data = pre_pro.scale(data)
