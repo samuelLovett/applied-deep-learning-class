@@ -17,39 +17,51 @@ import warnings
 warnings.simplefilter(action='ignore', category=FutureWarning)
 from sklearn.neighbors import KNeighborsClassifier
 import time
+from sklearn.model_selection import GridSearchCV
+import numpy as np
 
 
 class knnClass:
-    def __init__(knn, x, y, k):
-        knn.prediction_time_start = None
-        knn.prediction_time_end = None
-        knn.k = k
+    def __init__(self):
+        self.prediction_time_start = None
+        self.prediction_time_end = None
+        self.knn = None
+        self.training_start_time = None
+        self.training_end_time = None
+
+    def train_and_tune_knn(self, x, y):
         training_features = x
         training_labels = y
-        # Train k-nearest neighbors classifier
-        knn.training_start_time = time.time()
-        knn.clf = KNeighborsClassifier(n_neighbors=k)
-        knn.clf.fit(training_features, training_labels)
-        knn.training_end_time = time.time()
+        self.training_start_time = time.time()
 
-    def predict(knn, test_features):
+        number_of_neighbours = {'neighbours': np.arange(1, 11)}
+        self.knn = KNeighborsClassifier()
+        optimize = GridSearchCV(self.knn, param_grid=number_of_neighbours, cv=5)
+        optimize.fit(training_features, training_labels)
+        self.knn = optimize.best_estimator_
+        # print("Best parameters:", optimize.best_params_)
+        # print("Best score:", optimize.best_score_)
+        self.knn.fit(training_features, training_labels)
+        self.training_end_time = time.time()
+
+    def predict(self, knn_test_features):
         # Make predictions on test set
-        knn.prediction_time_start = time.time()
-        prediction = knn.clf.predict(test_features)
-        knn.prediction_time_end = time.time()
+        self.prediction_time_start = time.time()
+        prediction = self.clf.predict(knn_test_features)
+        self.prediction_time_end = time.time()
         return prediction
 
-    def time_stats_training(knn):
+    def time_stats_training(self):
         # Calculate the amount of time it took to train the classifier, as well as classify the test data in seconds
-        elapsed_training_time_seconds = knn.training_end_time - knn.training_start_time
+        elapsed_training_time_seconds = self.training_end_time - self.training_start_time
         elapsed_training_time_milli = elapsed_training_time_seconds*1000
         # print(f"Time elapsed to train KNN classifier with k={knn.k}: {elapsed_training_time_milli} ms")
         return elapsed_training_time_milli
 
-    def time_stats_classifying(knn):
+    def time_stats_classifying(self):
         # Calculate the amount of time it took to classify the test data in seconds and then converted to milliseconds
         try:
-            elapsed_classification_time_seconds = knn.prediction_time_end - knn.prediction_time_start
+            elapsed_classification_time_seconds = self.prediction_time_end - self.prediction_time_start
             elapsed_classification_time_milli = elapsed_classification_time_seconds * 1000
             # print(f"Time elapsed to classify using knn classifier with k={knn.k}: {elapsed_classification_time_milli} ms")
         except:
