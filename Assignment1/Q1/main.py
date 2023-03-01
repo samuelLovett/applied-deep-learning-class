@@ -102,7 +102,6 @@ def main():
     final_test_predictions = pd.DataFrame(final_test_predictions)
     final_test_predictions.to_csv('Decision_Tree_Test_Predictions.csv', index=False)
 
-
     my_knn = knnClass()
     my_knn.train_and_tune_knn(training_features, training_labels)
     knn_predictions = my_knn.predict(metric_features)

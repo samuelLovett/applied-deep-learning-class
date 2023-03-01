@@ -8,7 +8,7 @@ class mlpClass:
         self.mlp_classifier = None
 
     def train(self, dt_training_features, dt_training_label):
-        self.mlp_classifier = MLPClassifier(hidden_layer_sizes=(50, 50, 50), max_iter=1000, random_state=42)
+        self.mlp_classifier = MLPClassifier(hidden_layer_sizes=(50, 50, 50), max_iter=500, random_state=42, n_jobs=4)
         self.mlp_classifier.fit(dt_training_features, dt_training_label)
         return self.mlp_classifier
 
