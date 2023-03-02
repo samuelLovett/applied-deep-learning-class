@@ -26,7 +26,7 @@ class knnClass:
         training_features = x
         training_labels = y
         self.training_start_time = time.time()
-        self.knn = KNeighborsClassifier()
+        self.knn = KNeighborsClassifier(n_neighbors=1)
         self.knn.fit(training_features, training_labels)
         self.training_end_time = time.time()
         return self.knn

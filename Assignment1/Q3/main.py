@@ -31,7 +31,7 @@ def train_ensemble_classifier(dt_classifier, knn_classifier, nb_classifier, svm_
     else:
         ensemble_classifier = VotingClassifier(estimators=[('dt', dt_classifier), ('knn', knn_classifier),
                                                            ('gnb', nb_classifier), ('svc', svm_classifier),
-                                                           ('mlp', mlp_classifier)], voting='soft')
+                                                           ('mlp', mlp_classifier)], voting='soft', n_jobs=-1)
         ensemble_classifier.fit(features, labels)
         return ensemble_classifier
 
@@ -49,10 +49,6 @@ def train_ensemble_classifier_test(dt_classifier, knn_classifier, nb_classifier,
         return ensemble_classifier
 
 
-def test_ensemble_classifier(classifier, features, labels):
-    print(classifier.score(features, labels))
-
-
 def get_metrics(predicted_labels, true_labels):
     report = classification_report(true_labels, predicted_labels)
     return report
@@ -67,6 +63,10 @@ def main():
     validation_features = validation_features_3d.reshape(validation_features_3d.shape[0], -1)
     training_labels = trainy[:50000]
     validation_labels = trainy[50000:]
+
+    test_features_3d = test_features[:50000, :, :]
+    test_data = test_features_3d.reshape(test_features_3d.shape[0], -1)
+    test_labels=test_labels[:50000]
 
     # # preprocess the data - remove
     # my_training_preprocessing = pre_ProcessingClass(raw_train_data, training_data=True)
@@ -118,13 +118,13 @@ def main():
     trained_svm = my_svm.train(training_features, training_labels)
     svm_predictions = my_svm.predict(validation_features)
     svm_validation_metrics = get_metrics(svm_predictions, validation_labels)
-    print(f"svm {svm_validation_metrics['classification_report']}\n")
+    print(f"svm {svm_validation_metrics}\n")
 
     my_mlp = mlpClass()
     trained_mlp = my_mlp.train(training_features, training_labels)
     mlp_predictions = my_mlp.predict(validation_features)
     mlp_validation_metrics = get_metrics(mlp_predictions, validation_labels)
-    print(f"mlp {mlp_validation_metrics['classification_report']}\n")
+    print(f"mlp {mlp_validation_metrics}\n")
 
     trained_ensemble_hard = train_ensemble_classifier(trained_decision_tree, trained_knn, trained_nb, trained_svm,
                                                       trained_mlp, 'hard', training_features, training_labels)
@@ -132,15 +132,16 @@ def main():
     ensemble_hard_validation_metrics = get_metrics(ensemble_predict_hard, validation_labels)
     print(f"Hard ensemble Validation {ensemble_hard_validation_metrics}\n")
 
+    #
     trained_ensemble_soft = train_ensemble_classifier(trained_decision_tree, trained_knn, trained_nb, trained_svm,
                                                       trained_mlp, 'soft', training_features, training_labels)
     ensemble_predict_soft = trained_ensemble_soft.predict(validation_features)
     ensemble_soft_validation_metrics = get_metrics(ensemble_predict_soft, validation_labels)
     print(f"Soft ensemble Validation {ensemble_soft_validation_metrics}\n")
 
-    ensemble_test_predict = trained_ensemble_hard.predict(test_features)
+    ensemble_test_predict = trained_ensemble_hard.predict(test_data)
     ensemble_test_metrics = get_metrics(ensemble_test_predict, test_labels)
-    print(f"Hard ensemble Test Metrics {ensemble_soft_validation_metrics}\n")
+    print(f"Hard ensemble Test Metrics {ensemble_test_metrics}\n")
 
 
 # Press the green button in the gutter to run the script.

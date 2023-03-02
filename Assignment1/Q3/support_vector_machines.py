@@ -8,7 +8,7 @@ class svmClass:
         self.svm_classifier = None
 
     def train(self, dt_training_features, dt_training_label):
-        self.svm_classifier = svm.SVC(kernel='linear', C=1.0)
+        self.svm_classifier = svm.SVC(kernel='linear', C=1.0, probability=True)
         self.svm_classifier.fit(dt_training_features, dt_training_label)
         return self.svm_classifier
 
