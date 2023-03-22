@@ -1,6 +1,6 @@
 import pandas as pd
 from imblearn.over_sampling import RandomOverSampler
-from sklearn.model_selection import train_test_split, GridSearchCV
+from sklearn.model_selection import train_test_split, GridSearchCV, RepeatedKFold
 from sklearn.feature_selection import SelectKBest, f_classif, RFE
 from sklearn.ensemble import RandomForestClassifier
 import numpy as np
@@ -25,7 +25,6 @@ class SamsClassifierModel:
         np_tobe_flattened_val = tobe_flattened_y_val.to_numpy()
         self.val_labels = np_tobe_flattened_val.ravel()
 
-
     def ensemble_learning_classifier_train(self):
         self.mlp_classifier = MLPClassifier(hidden_layer_sizes=(50, 50, 50), max_iter=500, random_state=42)
         self.mlp_classifier.fit(self.model_train_features, self.model_train_labels)
@@ -33,12 +32,11 @@ class SamsClassifierModel:
         self.random_forest_classifier = RandomForestClassifier()
         self.random_forest_classifier.fit(self.model_train_features, self.model_train_labels)
 
-
     def ensemble_learning_classifier_optimization(self):
         mlp_grid_param = {'hidden_layer_sizes': [(50, 50, 50), (50, 100, 50), (50,), (100,)],
-                                  'activation': ['tanh', 'relu', 'logistic'],
-                                  'alpha': [0.0001, 0.001, 0.05],
-                                  'learning_rate': ['constant', 'adaptive']}
+                          'activation': ['tanh', 'relu', 'logistic'],
+                          'alpha': [0.0001, 0.001, 0.05],
+                          'learning_rate': ['constant', 'adaptive']}
         random_forest_params = {
             'n_estimators': [50, 100, 200],
             'max_depth': [5, 10, 15, None],
@@ -55,5 +53,40 @@ class SamsClassifierModel:
         random_forest_best_params = random_forest_grid_search.best_params_
         self.random_forest_classifier = RandomForestClassifier(**random_forest_best_params)
 
-    def ensemble_test(self, the_features, the_labels):
-        print("lmao")
+    def nested_cross_val_ensemble_test(self, the_features, the_labels):
+        #
+        # ensemble_clf = VotingClassifier(estimators=[('dt', clf1), ('knn', clf2), ('svc', clf3)], voting='soft')
+        # ensemble_clf.fit(X_train, y_train)
+        #
+        # # Predict using the ensemble classifier
+        # y_pred = ensemble_clf.predict(X_test)
+        #
+        # # Evaluate accuracy
+        # accuracy = accuracy_score(y_test, y_pred)
+        # print('Accuracy:', accuracy)
+
+    def repeated_k_fold_ensemble_test(self, the_features, the_labels):
+        # This is just a rough code of how it should work does not include any repeated k fold
+        # ensemble_clf = VotingClassifier(estimators=[('dt', clf1), ('knn', clf2), ('svc', clf3)], voting='soft')
+        # ensemble_clf.fit(X_train, y_train)
+        #
+        # # Predict using the ensemble classifier
+        # y_pred = ensemble_clf.predict(X_test)
+        #
+        # # Evaluate accuracy
+        # accuracy = accuracy_score(y_test, y_pred)
+        # print('Accuracy:', accuracy)
+
+        # Define Repeated K-fold cross-validation
+        rkf = RepeatedKFold(n_splits=10, n_repeats=10, random_state=42)
+
+        # Evaluate accuracy using Repeated K-fold cross-validation
+        accuracies = []
+        for train_index, test_index in rkf.split(X):
+            X_train, X_test = X[train_index], X[test_index]
+            y_train, y_test = y[train_index], y[test_index]
+            ensemble_clf.fit(X_train, y_train)
+            y_pred = ensemble_clf.predict(X_test)
+            accuracy = accuracy_score(y_test, y_pred)
+            accuracies.append(accuracy)
+

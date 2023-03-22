@@ -5,6 +5,7 @@ from sklearn.feature_selection import SelectKBest, f_classif, RFE
 from sklearn.ensemble import RandomForestClassifier
 import numpy as np
 
+
 class SamsPreProcessingClass:
     def __init__(self, stats=True):
         self.flattened_y_over = None
@@ -31,7 +32,6 @@ class SamsPreProcessingClass:
 
     def over_sample(self):
         oversampled = RandomOverSampler(sampling_strategy='minority')
-        # double check that the data set is actually being combined correctly since they are from two separate files - high Sam
         self.x_oversampled, self.y_oversampled = oversampled.fit_resample(self.train_feature, self.train_labels)
         # print("Length of oversampled features {}".format(len(self.x_oversampled)))
         # print("Length of oversampled labels {}".format(len(self.y_oversampled)))
@@ -51,8 +51,6 @@ class SamsPreProcessingClass:
         selector.fit(self.x_oversampled, self.flattened_y_over)
         column_idx = selector.get_support(indices=True)
         self.training_step_b = self.x_oversampled.iloc[:,column_idx]
-
-
 
         # debug
         # num_rows, num_cols = self.training_step_b.shape
