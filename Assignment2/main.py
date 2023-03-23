@@ -16,6 +16,10 @@ def main():
 
     my_classifier.ensemble_learning_classifier_train()
     my_classifier.ensemble_learning_classifier_optimization()
+    my_classifier.repeated_k_fold_ensemble_test(my_test_features, my_test_labels)
+    # issue with the nested cv function
+    my_classifier.nested_cross_val_ensemble_test(my_test_features, my_test_labels)
+
 
 
 if __name__ == '__main__':

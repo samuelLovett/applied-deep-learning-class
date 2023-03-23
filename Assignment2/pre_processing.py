@@ -25,10 +25,13 @@ class SamsPreProcessingClass:
             print("The data set has {} features".format(len(features.columns)))
 
         # Split the data into test and train when the pre_processing object is created
-        self.train_feature, self.test_features, self.train_labels, self.test_labels = train_test_split(features,
+        self.train_feature, self.test_features, self.train_labels, self.test_labels_wide = train_test_split(features,
                                                                                                        class_labels,
                                                                                                        test_size=0.2,
                                                                                                        random_state=1)
+        tobe_flattened_y_test = self.test_labels_wide[['Class']]
+        np_tobe_flattened_test = tobe_flattened_y_test.to_numpy()
+        self.test_labels = np_tobe_flattened_test.ravel()
 
     def over_sample(self):
         oversampled = RandomOverSampler(sampling_strategy='minority')
